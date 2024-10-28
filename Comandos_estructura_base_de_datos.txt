@@ -1,0 +1,219 @@
+//EMPRESA  DE VENTAS DE BICICLETAS//
+
+//CREACIÓN DE LA BASE DE DATOS 
+
+CREATE DATABASE empresa_bicicletas;
+
+//USE  empresa_bicicletas;
+
+
+//Tabla PAISES
+CREATE TABLE paises(
+	id_pais INT(50) NOT NULL AUTO_INCREMENT,
+	nombre VARCHAR(50) NOT NULL UNIQUE,
+	PRIMARY KEY(id_pais)
+);
+
+// Tabla CIUDADES
+CREATE TABLE ciudades(
+	id_ciudad INT NOT NULL AUTO_INCREMENT,
+	nombre VARCHAR(50) NOT NULL UNIQUE,
+	fk_id_pais INT NOT NULL,
+	PRIMARY KEY(id_ciudad),
+	FOREIGN KEY(fk_id_pais) REFERENCES paises(id_pais)
+);
+
+
+//TABLA Empresa
+
+CREATE TABLE empresa(
+	id_empresa INT(1) NOT NULL,
+	nombre VARCHAR(50) NOT NULL,
+	PRIMARY KEY(id_empresa)
+);
+
+//Tabla SUCURSALES
+
+CREATE TABLE sucursales(
+	id_sucursal INT NOT NULL AUTO_INCREMENT,
+	nombre_sucursal VARCHAR(100) NOT NULL UNIQUE,
+	fk_id_ciudad INT NOT NULL,
+	fk_id_empresa INT NOT NULL,
+	PRIMARY KEY(id_sucursal),
+	FOREIGN KEY ( fk_id_ciudad ) REFERENCES ciudades (id_ciudad),
+	FOREIGN KEY ( fk_id_empresa ) REFERENCES empresa (id_empresa)
+);
+
+//Tabla CARGOS
+
+CREATE TABLE cargos(
+	id_cargo INT NOT NULL AUTO_INCREMENT,
+	descripcion_cargo VARCHAR(100) NOT NULL UNIQUE,
+	PRIMARY KEY(id_cargo)
+);
+
+//Tabla EMPLEADOS
+
+CREATE TABLE empleados(
+	id_empleado INT NOT NULL AUTO_INCREMENT,
+	nombre VARCHAR(100) NOT NULL,
+	edad INT(100) NOT NULL,
+	email VARCHAR(100) NOT NULL UNIQUE,
+	telefono VARCHAR(15) NOT NULL UNIQUE,
+	direccion VARCHAR(100) NOT NULL,
+	fk_id_cargo INT NOT NULL,
+	fk_id_sucursal INT NOT NULL,
+	PRIMARY KEY(id_empleado),
+	FOREIGN KEY (fk_id_cargo) REFERENCES cargos (id_cargo),
+	FOREIGN KEY (fk_id_sucursal) REFERENCES sucursales (id_sucursal)
+);
+
+//Tabla categorias
+CREATE TABLE categorias(
+	id_categoria INT NOT NULL AUTO_INCREMENT,
+	categoria VARCHAR(50) NOT NULL UNIQUE,
+	PRIMARY KEY(id_categoria)
+);
+
+//Tabla productos
+
+CREATE TABLE productos(
+	id_producto INT NOT NULL AUTO_INCREMENT,
+	nombre VARCHAR(100) NOT NULL UNIQUE,
+	fk_id_categoria INT NOT NULL,
+	precio DECIMAL(10,2) NOT NULL, 
+	stock SMALLINT NOT NULL, 
+	PRIMARY KEY(id_producto),
+	FOREIGN KEY (fk_id_categoria) REFERENCES categorias (id_categoria)
+);
+
+
+//Tabla Clientes.
+
+CREATE TABLE clientes(
+	id_cliente INT NOT NULL AUTO_INCREMENT,
+	nombre VARCHAR(100) NOT NULL, 
+	email VARCHAR(100) NOT NULL UNIQUE,
+	telefono VARCHAR(15) NOT NULL UNIQUE,
+	direccion VARCHAR(100) NOT NULL,
+	edad INT(100),
+	PRIMARY KEY(id_cliente)
+);
+
+//Tabla Ventas
+
+CREATE TABLE ventas(
+	id_venta INT NOT NULL AUTO_INCREMENT,
+	fecha_venta DATE NOT NULL,
+	total_venta DECIMAL(10,2) NOT NULL,
+	fk_id_cliente INT NOT NULL,
+	fk_id_sucursal INT NOT NULL,
+	fk_id_empleado INT NOT NULL,
+	PRIMARY KEY(id_venta),
+	FOREIGN KEY (fk_id_cliente) REFERENCES clientes (id_cliente),
+	FOREIGN KEY (fk_id_sucursal) REFERENCES sucursales (id_sucursal),
+	FOREIGN KEY (fk_id_empleado) REFERENCES empleados (id_empleado)
+);
+
+//Detalles ventas
+
+CREATE TABLE detalles_venta(
+	id_detalle_venta INT NOT NULL AUTO_INCREMENT,
+	fk_id_venta INT NOT NULL,
+	fk_id_producto INT NOT NULL,
+	cantidad_producto SMALLINT NOT NULL,
+	precio_unitario DECIMAL(10,2) NOT NULL,
+	total_x_producto DECIMAL(10,2) GENERATED ALWAYS AS (cantidad_producto * precio_unitario),
+	PRIMARY KEY(id_detalle_venta),
+	FOREIGN KEY (fk_id_venta) REFERENCES ventas(id_venta),
+	FOREIGN KEY (fk_id_producto) REFERENCES productos (id_producto)
+);	
+
+
+//Tabla proveedores
+
+CREATE TABLE proveedores(
+	id_proveedor INT NOT NULL AUTO_INCREMENT,
+	nombre VARCHAR(50) NOT NULL,
+	email VARCHAR(100) NOT NULL UNIQUE,
+	direccion VARCHAR(100) NOT NULL,
+	telefono VARCHAR(15) NOT NULL UNIQUE,
+	PRIMARY KEY(id_proveedor)
+);
+
+//Tabla orden de pedido
+
+CREATE TABLE orden_de_pedido(
+	id_pedido INT NOT NULL AUTO_INCREMENT,
+	fecha DATE NOT NULL,
+	fk_id_sucursal INT NOT NULL,
+	fk_id_proveedor INT NOT NULL,
+	PRIMARY KEY(id_pedido),
+	FOREIGN KEY (fk_id_sucursal) REFERENCES sucursales (id_sucursal),
+	FOREIGN KEY (fk_id_proveedor) REFERENCES proveedores (id_proveedor)
+);
+
+
+//Tabla detalles_de_pedido
+
+CREATE TABLE detalles_de_pedido(
+	id_detalles_de_pedido INT NOT NULL AUTO_INCREMENT,
+	fk_id_producto INT NOT NULL,
+	cantidad SMALLINT NOT NULL,
+	fk_id_pedido INT NOT NULL,
+	PRIMARY KEY(id_detalles_de_pedido),
+	FOREIGN KEY (fk_id_producto) REFERENCES productos (id_producto),
+	FOREIGN KEY (fk_id_pedido) REFERENCES orden_de_pedido (id_pedido)
+); 
+
+//Facturas proveedor
+
+
+CREATE TABLE factura_proveedor(
+	id_factura INT NOT NULL AUTO_INCREMENT,
+	fecha_de_pago DATE NOT NULL,
+	total DECIMAL(20,2) NOT NULL,
+	fk_id_sucursal INT NOT NULL,
+	fk_id_proveedor INT NOT NULL,
+	PRIMARY KEY(id_factura),
+	FOREIGN KEY (fk_id_sucursal) REFERENCES sucursales (id_sucursal),
+	FOREIGN KEY (fk_id_proveedor) REFERENCES proveedores (id_proveedor)
+); 
+
+
+//table detalle_factura
+
+CREATE TABLE detalle_factura(
+	id_detalle_factura INT NOT NULL AUTO_INCREMENT,
+	fk_id_producto INT NOT NULL,
+	fk_id_factura INT NOT NULL,
+	cantidad SMALLINT NOT NULL,
+	precio_unitario DECIMAL(10,2) NOT NULL,
+	total_x_producto DECIMAL(10,2) NOT NULL,
+	fecha_limite_pago DATE NOT NULL, 
+	PRIMARY KEY(id_detalle_factura),
+	FOREIGN KEY (fk_id_producto) REFERENCES productos (id_producto),
+	FOREIGN KEY (fk_id_factura) REFERENCES factura_proveedor (id_factura)
+); 
+
+
+//TABLA formas de pago 
+
+CREATE TABLE formas_de_pago(
+	id_forma_pago INT(30) NOT NULL AUTO_INCREMENT,
+	forma_de_pago VARCHAR(50) NOT NULL,
+	PRIMARY KEY(id_forma_pago)
+);
+
+
+//FORMA DE PAGO VENTA 
+
+CREATE TABLE forma_de_pago_venta(
+	fk_id_forma_pago INT NOT NULL AUTO_INCREMENT,
+	fk_id_venta INT NOT NULL,
+	valor DECIMAL(10,2) NOT NULL,
+	FOREIGN KEY (fk_id_forma_pago) REFERENCES formas_de_pago (id_forma_pago),
+	FOREIGN KEY (fk_id_venta) REFERENCES ventas (id_venta)
+
+);
+

@@ -1,0 +1,33 @@
+//Empresa de bicicletas. 
+
+-> Función para agregarle valores a las fechas. (AVERIGUAR)
+
+//Desarrollo y búsqueda de entidades principales.
+
+	->CIUDADES: Van a haber múltiples ciudades que contienen varias sucursales.
+
+	->SUCURSALES: puede llegar a tener varios puntos en una misma ciudad. 
+	
+	->EMPLEADOS: Cada empleado desempeña un cargo específico.
+
+	->CARGOS: Habrán múltiples cargos. (Reparación de bicicletas, ensamble, caja, ventas ).
+
+	->CLIENTES.
+
+	->FACTURA CLIENTE.
+	
+	->TIPOS DE PAGO: (debito y crédito.) tener en cuenta el número de aprobación cuando el pago es por tarjeta. 
+	
+
+	
+	->PROVEEDORES: Nosotros realizamos las compras. 
+
+	->COMPRAS: Se debe llevar un registro de las compras a los proveedores.
+		   (Un repuesto puede ser vendido por muchos proveedores)
+	
+	-> FACTURAS POR PAGAR.
+
+	->REPORTES. 
+
+
+NOTA: Por cada venta los empleados ganan un bono. Es determinado por el propietario del local. (Información modificable).
